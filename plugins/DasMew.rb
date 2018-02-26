@@ -8,8 +8,8 @@ class DasMew
     m.reply ">> #{msg}"
   end
 
-  match /meow/i, method: :meow
-  def meow(m, msg)
+  match /meow/i, method: :meow, use_prefix: false
+  def meow(m)
     m.reply ["Meow!", "Nya!", "Mew", ":3", "Meow~", "Nya~"].sample
   end
 end

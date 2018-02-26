@@ -7,8 +7,8 @@ require 'nokogiri'
 
 class Search
 	include Cinch::Plugin
-	match /!s (.+)/, use_prefix: false
-	match /!a (.+)/, use_prefix: false, method: :answer
+	match /s (.+)/
+	match /a (.+)/, method: :answer
 
 	def answer(m, query)
 		res = JSON.parse open("http://api.duckduckgo.com?q=#{CGI.escape query}&format=json").read

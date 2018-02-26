@@ -1,17 +1,29 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    childprocess (0.8.0)
+      ffi (~> 1.0, >= 1.0.11)
     cinch (2.3.4)
+    concurrent-ruby (1.0.5)
+    faker (1.8.7)
+      i18n (>= 0.7)
+    ffi (1.9.22)
+    i18n (1.0.0)
+      concurrent-ruby (~> 1.0)
     mini_portile2 (2.3.0)
     nokogiri (1.8.2)
       mini_portile2 (~> 2.3.0)
+    safe_ruby (1.0.4)
+      childprocess (>= 0.3.9)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   cinch
+  faker
   nokogiri
+  safe_ruby
 
 BUNDLED WITH
    1.16.1
