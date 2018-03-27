@@ -8,4 +8,5 @@ class Eval
   def execute(m, msg)
     m.reply SafeRuby.eval(msg)
   end
+
 end

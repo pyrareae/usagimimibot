@@ -6,3 +6,5 @@ services:
     command: bash -c "bundle install && bundle exec ruby main.rb"
     volumes:
       - .:/app
+    stdin_open: true
+    tty: true

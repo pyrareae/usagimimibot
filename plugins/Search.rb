@@ -11,23 +11,36 @@ class Search
 	match /a (.+)/, method: :answer
 
 	def answer(m, query)
-		res = JSON.parse open("http://api.duckduckgo.com?q=#{CGI.escape query}&format=json").read
+		res = JSON.parse open("http://api.duckduckgo.com?q=#{CGI.escape query}&format=json&mo_html=1").read
 		
-		abstract = {desc: res['AbstractText'], url: res['AbstractURL']} if res['AbstractText']
+		answer = []
 
-		if abstract
-			m.reply "(#{abstract[:desc]} #{if abstract[:desc].length > 0 then '--' end} #{abstract[:url]}"
-		else
-			m.reply "(no results, try *??)"
-		end
+    fields = %w{Heading AnswerType}
+    footer = %w{AbstractURL}
+    body = %w{AbstractText Definition} #only one will be used, the rest are fallbacks
+  
+    fields.each do |f|
+      answer << res[f] unless f.nil? || f.empty?
+    end
+    b = nil
+    body.each do |f|
+      b = res[f] unless f.nil? || f.empty?
+    end
+    answer << b
+    footer.each do |f|
+      answer << res[f] unless f.nil? || f.empty?
+    end
+    answer.delete '' #remove empties
+
+		m.reply answer.join(' :: ')
 	end
 
 	def execute(m, query)
 		num = query[/p(\d)/, 1].to_i
-		num += 1 if num > 0
+		num -= 1 if num > 0
 		query.sub! /p\d/, ''
 
-		scrubber = /(<\/?[^>]*>)|(\n+)/
+		scrubber = /(<\/?[^>]*>)|(\n+)|(^ *)|( *$)/
         @bot.loggers.debug query
 		page = Nokogiri::HTML(open("https://duckduckgo.com/html?q=#{CGI.escape query}"))
 		result = page.css('.web-result')[num]
