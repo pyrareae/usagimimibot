@@ -1,4 +1,6 @@
 require 'cinch'
+require 'yaml'
+require 'byebug'
 
 
 class PluginMan
@@ -57,10 +59,11 @@ end
 
 bot = Cinch::Bot.new do
   configure do |c|
-    c.server = "irc.freenode.net"
-    c.channels = ["#meowchattesting"]
-    c.nick = 'redmew'
-    @adimns = ['lunarkitty7','lunarkitty']
+    cfg = YAML.load(open 'conf.yml')
+    c.server = cfg['server']
+    c.channels = cfg['channels']
+    c.nick = cfg['nick']
+    @adimns = cfg['admins']
     c.plugins.plugins = [PluginMan]
     #c.plugins.plugins = [JoinPart,Search,DasMew]
   end
