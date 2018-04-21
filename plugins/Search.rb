@@ -8,6 +8,7 @@ require 'nokogiri'
 class Search
 	include Cinch::Plugin
 	match /s (.+)/
+	match /What's (.+), precious/i, use_prefix: false, method: :execute
 	match /a (.+)/, method: :answer
 
 	def answer(m, query)
@@ -36,9 +37,9 @@ class Search
 	end
 
 	def execute(m, query)
-		num = query[/p(\d)/, 1].to_i
+		num = query[/-(\d)/, 1].to_i
 		num -= 1 if num > 0
-		query.sub! /p\d/, ''
+		query.sub! /-\d/, ''
 
 		scrubber = /(<\/?[^>]*>)|(\n+)|(^ *)|( *$)/
         @bot.loggers.debug query
