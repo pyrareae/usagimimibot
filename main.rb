@@ -2,13 +2,13 @@ require 'cinch'
 require 'yaml'
 require 'byebug'
 
-
 class PluginMan
   include Cinch::Plugin
   def initialize(*args)
     super
     @list = []
-    @admins = ['lunarkitty7']
+    @cfg = YAML.load(open 'conf.yml')
+    @adimns = @cfg['admins']
     load_plugins()
   end
 
@@ -63,7 +63,6 @@ bot = Cinch::Bot.new do
     c.server = cfg['server']
     c.channels = cfg['channels']
     c.nick = cfg['nick']
-    @adimns = cfg['admins']
     c.plugins.plugins = [PluginMan]
     #c.plugins.plugins = [JoinPart,Search,DasMew]
   end

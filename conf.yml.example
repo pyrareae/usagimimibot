@@ -3,3 +3,7 @@ server:
 nick:
 admins:
   -
+channels:
+  -
+api_keys:
+  google:

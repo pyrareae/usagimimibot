@@ -3,7 +3,7 @@ require 'open-uri'
 require 'json'
 require 'cgi'
 require 'nokogiri'
-
+require_relative '../util'
 
 class Search
 	include Cinch::Plugin
