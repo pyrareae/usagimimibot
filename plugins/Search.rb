@@ -3,14 +3,17 @@ require 'open-uri'
 require 'json'
 require 'cgi'
 require 'nokogiri'
+require 'net/http'
 require_relative '../util'
 
 class Search
 	include Cinch::Plugin
-	match /s (.+)/
+	match /s (.+)/, method: :search
 	match /What's (.+), precious/i, use_prefix: false, method: :execute
 	match /a (.+)/, method: :answer
+	match /wiki (.+)/, method: :wiki
 
+  #search with ddg instant answer api, very buggy still
 	def answer(m, query)
 		res = JSON.parse open("http://api.duckduckgo.com?q=#{CGI.escape query}&format=json&mo_html=1").read
 		
@@ -36,7 +39,8 @@ class Search
 		m.reply answer.join(' :: ')
 	end
 
-	def execute(m, query)
+  #search with web scrape
+	def search(m, query)
 		num = query[/-(\d)/, 1].to_i
 		num -= 1 if num > 0
 		query.sub! /-\d/, ''
@@ -50,6 +54,36 @@ class Search
 		url = URI.unescape result.css('a')[0]['href']
 		url = url.match(/(http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+\#-]*[\w@?^=%&\/~+\#-])?/)
 
-		m.reply "#{title} :: #{desc} :: #{url}"
+    unless m #internal call
+      return {url: url, desc: desc, title: title, result: result, page: page}
+		else 
+		  m.reply "#{title} :: #{desc} :: #{url}"
+		end
 	end
+
+  #get wiki page url and display summery
+	def wiki(m, query)
+    wiki_url = fetch("https://duckduckgo.com/html?q=#{CGI.escape '!wiki '+query}").uri.to_s
+    api_url = "https://en.wikipedia.org/api/rest_v1/"
+    uri = URI api_url + "page/summary/#{wiki_url[/([^\/]+)\/?$/]}"
+    res = Net::HTTP.get uri
+    m.reply "#{wiki_url} :: #{JSON.parse(res)["extract"]}"
+	end
+
+	private
+	  def fetch(uri_str, limit=10)
+      raise "too many HTTP redirects" if limit == 0
+
+      response = Net::HTTP.get_response(URI(uri_str))
+
+      case response
+      when Net::HTTPSuccess then
+        response
+      when Net::HTTPRedirection then
+        location = response['location']
+        fetch location, limit-1
+      else
+        response.value 
+      end
+	  end
 end
