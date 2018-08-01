@@ -24,8 +24,16 @@ class PluginMan
     @list = []
     files.grep(/.*\.rb/) do |file|
       @bot.loggers.debug '[PluginMan] loading '+file
-      if load "plugins/#{file}"
-        @list << Kernel.const_get(file.chomp('.rb'))
+      if @cfg['blacklist'].include? file.chomp('.rb')
+        @bots.loggers.debug "[PluginMan] #{file} skipping" 
+      elsif load "plugins/#{file}"
+        plugin = Kernel.const_get(file.chomp('.rb')) 
+	  #plugin.db = @db if defined?(plugin.db=1)
+	  #inject config
+	  class << plugin
+            @@conf = @cfg
+	  end
+	  @list << plugin
       else
         @bots.loggers.debug "[PluginMan] #{file} failed to load" 
       end
@@ -36,7 +44,7 @@ class PluginMan
     @bot.plugins.each do |plugin|
       unless plugin == self
         plugin.unregister
-        @bot.loggers.debug "[PluginMan] successfully unloaded #{plugin}"
+        @bot.loggers.debug "[Pluginman] successfully unloaded #{plugin}"
       end
     end
   end
