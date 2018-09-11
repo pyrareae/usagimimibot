@@ -3,7 +3,6 @@ require_relative '../util.rb'
 
 class DasMew
   include Cinch::Plugin
-  include Util
 
   match /echo (.+)/, method: :echo
   def echo(m, msg)
