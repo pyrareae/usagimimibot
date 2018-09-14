@@ -7,3 +7,7 @@ channels:
   -
 api_keys:
   google:
+blacklist:
+sasl:
+  username:
+  password:

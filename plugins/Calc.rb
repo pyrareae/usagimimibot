@@ -22,7 +22,7 @@ class Calc
         '*' => -> a, b {a*b},
         '/' => -> a, b {a/b}
       }
-    op_order = %w{* / + -}
+    op_order = %w[* / + -]
 
     index = []
 

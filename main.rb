@@ -14,7 +14,7 @@ class PluginMan
     load_plugins()
   end
 
-  match /reload (.*)/, method: :reload_plugins
+  match /reload(.*)/, method: :reload_plugins
   match 'list', method: :list_plugins
   #alias old_reg __register
   #def __register(*args)
@@ -63,7 +63,7 @@ class PluginMan
   
   def status_message
     c = {ok: :green, error: :red, fail: :red, disabled: :yellow}
-    @status.reduce([]){ |m, i| m << "[#{Format(c[i[:status]], i[:name])}]" }.join(', ')
+    @status.reduce([]){ |m, i| m << "[#{Format(c[i[:status]], :black, i[:name])}]" }.join('')
   end
   
   def reload_plugins(m, msg)
@@ -78,7 +78,7 @@ class PluginMan
   	response = "Reloaded: #{@status.count {|i| i[:status]==:ok}}"
   	response << ", failed: %d" % failed if failed > 0
   	response << ", disabled: %d" % disabled if disabled > 0
-  	response << ' ' + status_message if msg[/-s/]
+  	response << ' ' + status_message if msg[/-v/]
   	m.reply response
   end
   
@@ -102,6 +102,10 @@ bot = Cinch::Bot.new do
     c.nick = cfg['nick']
     c.plugins.plugins = [PluginMan]
     c.plugins.prefix = /^#{cfg['prefix']}/ || /^!/
+    if cfg['sasl']
+      c.sasl.username = cfg['sasl']['username'] || cfg['nick']
+      c.sasl.password = cfg['sasl']['password']
+    end
     #c.plugins.plugins = [JoinPart,Search,DasMew]
   end
 end
