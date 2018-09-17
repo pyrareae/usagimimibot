@@ -2,6 +2,14 @@ require 'cinch'
 require 'yaml'
 require 'byebug'
 require_relative 'util.rb'
+require 'ostruct'
+require 'json'
+
+class Hash #https://stackoverflow.com/a/45851976
+  def to_o
+    JSON.parse to_json, object_class: OpenStruct
+  end
+end
 
 class PluginMan
   include Cinch::Plugin

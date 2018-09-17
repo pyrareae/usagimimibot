@@ -1,17 +1,65 @@
 require 'cinch'
-require 'open-uri'
+require 'open_uri_redirections'
+#require 'open-uri'
 require 'json'
 require 'cgi'
 require 'nokogiri'
 require 'net/http'
+require 'ostruct'
 require_relative '../util'
+require_relative 'Image'
+
+module Usagi::Search
+  def search(query)
+    num = query[/-(\d)/, 1].to_i
+		num -= 1 if num > 0
+		query.sub! /-\d/, ''
+
+		scrubber = /(<\/?[^>]*>)|(\n+)|(^ *)|( *$)/
+		page = Nokogiri::HTML(open("https://duckduckgo.com/html?q=#{CGI.escape query}"))
+		result = page.css('.web-result')[num]
+		title = result.css('.result__title').text.gsub(scrubber, '').gsub(/ +/, ' ')
+		desc = result.css('.result__snippet').text.gsub(scrubber, '').gsub(/ +/, ' ')
+		url = URI.unescape result.css('a')[0]['href']
+		url = url.match(/(http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+\#-]*[\w@?^=%&\/~+\#-])?/)
+
+    OpenStruct.new url: url, desc: desc, title: title, result: result, page: page
+  end
+  module_function :search
+
+  def image(query, result_num: nil)
+    num = query[/-p(\d+)/, 1].to_i || result_num
+  	num -= 1 if num > 0
+  	query.sub! /-p(\d+)/, ''
+
+    res=nil
+    #domain = Usagi.settings.cfg['search']['searx_domains'][0]
+  	Usagi.settings.cfg['search']['searx_domains'].each do |domain|
+  	  begin
+  	    #puts "[Image Search] trying #{domain}"
+        uri = URI domain
+        uri.query = URI.encode_www_form format: 'json', q: '!images '+query, safesearch: '1'
+        res = Net::HTTP.get uri
+        break if not res[/Rate limit/]
+      rescue => e
+        p e.message
+      end
+    end
+    return false if  res[/Rate limit/]
+    res_json = JSON.parse res, object_class: OpenStruct
+    #puts "[Image Search] using #{res_json.results[num]}"
+    res_json.results[num]
+  end
+  module_function :image
+end
 
 class Search
 	include Cinch::Plugin
 	match /s (.+)/, method: :search
 	match /What's (.+), precious/i, use_prefix: false, method: :execute
-	match /a (.+)/, method: :answer
+	#match /a (.+)/, method: :answer
 	match /wiki|w (.+)/, method: :wiki
+	match /i (.*)/, method: :image_search
 
   #search with ddg instant answer api, very buggy still
 	def answer(m, query)
@@ -39,26 +87,30 @@ class Search
 		m.reply answer.join(' :: ')
 	end
 
-  #search with web scrape
+  #search DuckDuckGo with web scrape
 	def search(m, query)
-		num = query[/-(\d)/, 1].to_i
-		num -= 1 if num > 0
-		query.sub! /-\d/, ''
+	  r = Usagi::Search.search(query)
+	  m.reply "#{r.title} :: #{r.desc} :: #{r.url}"
+	end
 
-		scrubber = /(<\/?[^>]*>)|(\n+)|(^ *)|( *$)/
-        @bot.loggers.debug query
-		page = Nokogiri::HTML(open("https://duckduckgo.com/html?q=#{CGI.escape query}"))
-		result = page.css('.web-result')[num]
-		title = result.css('.result__title').text.gsub(scrubber, '').gsub(/ +/, ' ')
-		desc = result.css('.result__snippet').text.gsub(scrubber, '').gsub(/ +/, ' ')
-		url = URI.unescape result.css('a')[0]['href']
-		url = url.match(/(http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+\#-]*[\w@?^=%&\/~+\#-])?/)
-
-    unless m #internal call
-      return {url: url, desc: desc, title: title, result: result, page: page}
-		else 
-		  m.reply "#{title} :: #{desc} :: #{url}"
-		end
+	def image_search(m, query)
+	  reg = / -h(\d+)/
+  	should_print = query[reg]
+ 	  print_h = query[reg, 1] || 4
+ 	  print_h = [print_h.to_i, 15].min
+  	query.sub!(reg, '')
+	  r = Usagi::Search::image(query)
+	  unless r
+  	  m.reply "too many queries, try again later"
+  	  return
+  	end
+    msg = [r.title, r.img_src]
+    begin
+	    msg << "\n" + Usagi::Image.draw(r.img_src, height: print_h) #if should_print
+	  rescue => e
+      m.reply e.message
+	  end
+	  m.reply msg.compact.delete_if{|i| i.empty? }.join(' :: ')
 	end
 
   #get wiki page url and display summery

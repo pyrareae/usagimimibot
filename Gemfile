@@ -5,4 +5,6 @@ gem 'faker'
 gem 'safe_ruby'
 gem 'byebug'
 gem 'sqlite3'
-
+gem 'mini_magick'
+gem 'drawille'
+gem 'open_uri_redirections'
