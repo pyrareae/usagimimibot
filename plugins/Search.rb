@@ -38,7 +38,7 @@ module Usagi::Search
   	  begin
   	    #puts "[Image Search] trying #{domain}"
         uri = URI domain
-        uri.query = URI.encode_www_form format: 'json', q: '!images '+query, safesearch: '1'
+        uri.query = URI.encode_www_form format: 'json', q: '!images '+query, safesearch: '1', engines: 'google'
         res = Net::HTTP.get uri
         break if not res[/Rate limit/]
       rescue => e
@@ -106,7 +106,7 @@ class Search
   	end
     msg = [r.title, r.img_src]
     begin
-	    msg << "\n" + Usagi::Image.draw(r.img_src, height: print_h) #if should_print
+	    msg << "\n" + Usagi::Image.draw(r.img_src.gsub(/^\/\//, 'http://'), height: print_h) #if should_print
 	  rescue => e
       m.reply e.message
 	  end
