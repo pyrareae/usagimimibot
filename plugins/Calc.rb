@@ -1,49 +1,78 @@
 require 'cinch'
-require 'byebug'
 
-class Calc
-  include Cinch::Plugin
-
-  match /calc (.*)/
-  def execute(m, msg)
-    m.reply parse(tokenize(msg))
-  end
-
+module Usagi::Calc
   def tokenize(s)
     split_pattern = /( |\+|\-|\*|\/|\)|\()/ 
     s = s.split(split_pattern)
     s.reject { |e| e.to_s.empty? or e == ' ' }
   end
+  module_function :tokenize
 
+  class Op
+    attr_reader :sym
+    def initialize(symbol, &block)
+      @sym = symbol
+      @action = block
+    end
+    def exec(a, b)
+      @action[a.to_f, b.to_f]
+    end
+  end
+
+  class Group
+    def initialize(op, a, b)
+      @op = op
+      @a = a
+      @b = b
+    end
+    def exec
+      a = @a.class == Group ? @a.exec : @a
+      b = @b.class == Group ? @b.exec : @b
+      @op.exec a, b
+    end
+  end
+  
   def parse(tokens)
-    ops = {
-        '+' => -> a, b {a+b},
-        '-' => -> a, b {a-b},
-        '*' => -> a, b {a*b},
-        '/' => -> a, b {a/b}
-      }
-    op_order = %w[* / + -]
-
-    index = []
-
-    #locate positions of operators
-    tokens.each_with_index do |token, i|
-      if op_order.include? token
-        index << [token, i]
+    ops = [
+      Op.new('*') {|a,b|a*b},
+      Op.new('/') {|a,b|a/b},
+      Op.new('+') {|a,b|a+b},
+      Op.new('-') {|a,b|a-b},
+    ]
+      
+    ast = tokens
+    head = 0
+    ops.each do |op|
+      loop do
+        dirty = false
+        tokens.each_with_index do |t, i|
+          if t == op.sym
+            group = Group.new(op, ast[i-1], ast[i+1])
+            ast[i-1..i+1] = []
+            ast.insert i-1, group
+            dirty=true
+            break
+          end
+        end
+        break unless dirty
       end
     end
+    ast[0]
+  end
+  module_function :parse
 
-    #order by op order and position
-    index.sort_by! {|x| [op_order.index(x[0]), x[1]]}
-    offset = -> arr, at, amount {arr.map! {|el| el[1] += amount if el[1] >= at }}
+  def calc(str)
+    parse(tokenize(str)).exec
+  end
+  module_function :calc
+end
 
-    calc = lambda do |t|
-      a, b = t[0].to_i, t[2].to_i
-      val = ops[t[1]][a, b]
-      t[a..b] = nil
-      t[a] = val 
-      calc[t.compact]
-    end
-    calc[tokens]
+class Calc
+  include Cinch::Plugin
+  include Usagi::Calc
+
+  match /calc (.*)/
+  def execute(m, msg)
+    m.reply "%g" % calc(msg)
   end
 end
