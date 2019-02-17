@@ -24,4 +24,15 @@ class DasMew
     c = (0..15).cycle
     m.reply msg.split('').reduce('') { |s, i| s+"\x03%02d%s" % [c.next, i] }
   end
+
+  match /[\,。_ø<].*quack/i, method: :get_duck, use_prefix: false
+  def get_duck(m)
+    @take_duck = true
+    Thread.new {sleep 10; m.reply ',bef' if @take_duck}
+  end
+
+  match /\,bef/, method: :cancel_duck, use_prefix: false
+  def cancel_duck(m)
+    @take_duck = false
+  end
 end
