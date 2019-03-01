@@ -28,12 +28,12 @@ class PluginMan
         @bots.loggers.debug "[PluginMan] #{file} skipping" 
       elsif load "plugins/#{file}"
         plugin = Kernel.const_get(file.chomp('.rb')) 
-	  #plugin.db = @db if defined?(plugin.db=1)
-	  #inject config
-	  class << plugin
+    #plugin.db = @db if defined?(plugin.db=1)
+    #inject config
+    class << plugin
             @@conf = @cfg
-	  end
-	  @list << plugin
+    end
+    @list << plugin
       else
         @bots.loggers.debug "[PluginMan] #{file} failed to load" 
       end
@@ -50,9 +50,9 @@ class PluginMan
   end
   def reload_plugins(m)
     #return unless check_user(m.user)
-  	unload_plugins()
-  	load_plugins()
-  	m.reply "Reloaded #{@list.size} plugins."
+    unload_plugins()
+    load_plugins()
+    m.reply "Reloaded #{@list.size} plugins."
   end
   def check_user(user)
     user.refresh 
