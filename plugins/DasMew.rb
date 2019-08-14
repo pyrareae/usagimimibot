@@ -4,9 +4,19 @@ require_relative '../util.rb'
 class DasMew
   include Cinch::Plugin
 
+  def initialize(*args)
+    super
+    @take_duck = {}
+  end
+
   match /echo (.+)/, method: :echo
   def echo(m, msg)
-    m.reply ">> #{msg}"
+    m.reply "#{msg}"
+  end
+
+  match /me (.+)/, method: :action
+  def action (m, msg)
+    m.action msg
   end
 
   match /meow/i, method: :meow, use_prefix: false
@@ -25,14 +35,16 @@ class DasMew
     m.reply msg.split('').reduce('') { |s, i| s+"\x03%02d%s" % [c.next, i] }
   end
 
-  match /[\,。_ø<].*quack/i, method: :get_duck, use_prefix: false
+  #match /([・゜。].*){4}/i, method: :get_duck, use_prefix: false
   def get_duck(m)
-    @take_duck = true
-    Thread.new {sleep 10; m.reply ',bef' if @take_duck}
+    t = 60*20
+    @take_duck[m.channel] = true
+    m.reply "stealing duck in #{t} seconds..."
+    Thread.new {sleep t; m.reply ',bef' if @take_duck[m.channel]}
   end
 
-  match /\,bef/, method: :cancel_duck, use_prefix: false
+  #match /\,bef/, method: :cancel_duck, use_prefix: false
   def cancel_duck(m)
-    @take_duck = false
+    @take_duck[m.channel] = false
   end
 end
