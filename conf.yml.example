@@ -1,13 +1,14 @@
 ---
 server:
 nick:
-admins:
-  -
 channels:
   -
-api_keys:
-  google:
 blacklist:
+  - #plugins
 sasl:
   username:
   password:
+groups:
+  admin:
+    - 
+prefix: "."
