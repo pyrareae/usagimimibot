@@ -1,6 +1,7 @@
 require 'cinch'
 require 'json'
 require 'ostruct'
+require 'net/http'
 require_relative '../util'
 
 class Weather

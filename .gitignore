@@ -1,3 +1,5 @@
 .gems
 conf.yml
 .byebug_history
+*.swp
+*.swo

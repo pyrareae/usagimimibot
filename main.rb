@@ -33,7 +33,7 @@ class PluginMan
     files = Dir.entries('plugins')
     @list = []
     @status = []
-    files.grep(/.*\.rb/) do |file|
+    files.grep(/^\w+\.rb/) do |file|
       @bot.loggers.debug '[PluginMan] loading ' + file
       @status << { name: file.chomp('.rb') }
       begin
