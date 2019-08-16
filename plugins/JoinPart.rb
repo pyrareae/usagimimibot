@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cinch'
 
 class JoinPart
@@ -9,22 +11,22 @@ class JoinPart
   def initialize(*args)
     super
 
-    @admins = [""]
+    @admins = ['']
   end
 
   def check_user(user)
     user.refresh # be sure to refresh the data, or someone could steal
-                 # the nick
+    # the nick
     @admins.include?(user.authname)
   end
 
-  def join(m, channel)
-    #return unless check_user(m.user)
+  def join(_m, channel)
+    # return unless check_user(m.user)
     Channel(channel).join
   end
 
   def part(m, channel)
-    #return unless check_user(m.user)
+    # return unless check_user(m.user)
     channel ||= m.channel
     Channel(channel).part if channel
   end
