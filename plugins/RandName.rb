@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cinch'
 require 'faker'
 
@@ -8,5 +10,4 @@ class RandName
   def execute(m)
     m.reply(Faker::Name.name)
   end
-
 end
