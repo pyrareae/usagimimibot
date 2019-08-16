@@ -61,7 +61,7 @@ class Search
   match /s (.+)/, method: :search
   match /What's (.+), precious/i, use_prefix: false, method: :execute
   # match /a (.+)/, method: :answer
-  match /wiki|w (.+)/, method: :wiki
+  match /wiki (.+)/, method: :wiki
   match /i (.*)/, method: :image_search
 
   # search with ddg instant answer api, very buggy still
