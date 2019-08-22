@@ -25,11 +25,10 @@ class Translate
       sl: from,
       tl: to,
       dt: :t,
-      q: CGI.escape(text),
-      format: :text
+      q: text
     })
     res = Net::HTTP.get_response(uri)
     return "Bad request" unless res.is_a? Net::HTTPOK
-    CGI.unescape(JSON.parse(res.body).first.first.first.delete(' ')).sub(/^ /, '')
+    JSON.parse(res.body).first.first.first
   end
 end
