@@ -93,7 +93,9 @@ class Search
   # search DuckDuckGo with web scrape
   def search(m, query)
     r = Usagi::Search.search(query)
-    m.reply "#{r.title} :: #{r.desc} :: #{r.url}"
+    max_chars = 300
+    available_chars = max_chars - r.title.length - r.url.length - 6
+    m.reply "#{r.title} | #{r.desc.length < available_chars ? r.desc : "#{r.desc[0...available_chars-1]}…"} | #{r.url}".gsub('...', '…')
   end
 
   def image_search(m, query)
