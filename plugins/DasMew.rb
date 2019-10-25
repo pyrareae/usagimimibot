@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'cinch'
+require 'zalgo'
 require_relative '../util.rb'
 
 class DasMew
@@ -28,24 +29,31 @@ class DasMew
 
   match /color (.*)/, method: :color
   def color(m, msg)
-    m.reply "\x0303" + msg
+    m.reply "\x03#{rand(0..15)}" + msg
   end
 
   match /rainbow (.*)/, method: :rainbow
   def rainbow(m, msg)
-    c = (0..15).cycle
+    c = [2, 3, 9, 8, 7, 4, 6].cycle
+    rand(0..13).times {c.next}
     m.reply msg.split('').reduce('') { |s, i| s + format("\x03%02d%s", c.next, i) }
   end
 
-  # match /([・゜。].*){4}/i, method: :get_duck, use_prefix: false
+  match /zalgo (.+)/, method: :zalgo
+  def zalgo(m, msg)
+    m.reply Zalgo.he_comes msg
+  end
+
+  match /([・゜。].*){4}/i, method: :get_duck, use_prefix: false
   def get_duck(m)
-    t = 60 * 20
+    return unless rand < 0.10
+    t = 60 * 5
     @take_duck[m.channel] = true
-    m.reply "stealing duck in #{t} seconds..."
+    # m.reply "stealing duck in #{t} seconds..."
     Thread.new { sleep t; m.reply ',bef' if @take_duck[m.channel] }
   end
 
-  # match /\,bef/, method: :cancel_duck, use_prefix: false
+  match /\,bef|\,bang/, method: :cancel_duck, use_prefix: false
   def cancel_duck(m)
     @take_duck[m.channel] = false
   end

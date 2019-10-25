@@ -6,12 +6,24 @@ require 'cgi'
 class Translate
   include Cinch::Plugin
 
-  match /2en (.+)/, method: :auto2eng
+  #match /2en (.+)/, method: :auto2eng
   match /trans (.+)/, method: :trans
-  def auto2eng(m, query)
-    m.reply fetch(query, from: 'auto', to: 'en')
-  end
+  #def auto2eng(m, query)
+  #  m.reply fetch(query, from: 'auto', to: 'en')
+  #end
 
+  #%w[en nl de].each do |lang|
+  #  mname = "auto2##{lang}".to_sym
+  #  define_method(mname) do |m, query|
+  #    m.reply fetch(query, from: 'auto', to: lang)
+  #  end
+  #  match /2#{lang} (.+)/, method: mname
+  #end
+
+  match /2(\w+) (.+)/, method: :autotrans
+  def autotrans(m, code, query)
+    m.reply fetch(query, from: 'auto', to: code)
+  end
   def trans(m, query)
     params = Hash[query.split(/\; ?/).map {|x| x.split(/\: ?/)}]
     m.reply fetch(params['text'] || params.key(nil), from: params['from'] || 'auto', to: params['to'] || 'en')
