@@ -3,9 +3,11 @@
 require 'cinch'
 require 'zalgo'
 require_relative '../util.rb'
+require_relative 'Guard.rb'
 
 class DasMew
   include Cinch::Plugin
+  include Usagi::Guard
 
   def initialize(*args)
     super
@@ -20,6 +22,13 @@ class DasMew
   match /me (.+)/, method: :action
   def action(m, msg)
     m.action msg
+  end
+
+  match /nick (.+)/, method: :nick
+  def nick(m, msg)
+    admin?(m) do
+      m.bot.nick = msg
+    end
   end
 
   match /meow/i, method: :meow, use_prefix: false
