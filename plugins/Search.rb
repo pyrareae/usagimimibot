@@ -17,11 +17,11 @@ module Usagi::Search
     num -= 1 if num > 0
     query.sub! /-\d/, ''
 
-    scrubber = %r{(</?[^>]*>)|(\n+)|(^ *)|( *$)}
+    html_element_re = %r{(</?[^>]*>)|(\n+)|(^ *)|( *$)}
     page = Nokogiri::HTML(open("https://duckduckgo.com/html?q=#{CGI.escape query}"))
     result = page.css('.web-result')[num]
-    title = result.css('.result__title').text.gsub(scrubber, '').gsub(/ +/, ' ')
-    desc = result.css('.result__snippet').text.gsub(scrubber, '').gsub(/ +/, ' ')
+    title = result.css('.result__title').text.gsub(html_element_re, '').gsub(/ +/, ' ')
+    desc = result.css('.result__snippet').text.gsub(html_element_re, '').gsub(/ +/, ' ')
     url = URI.unescape result.css('a')[0]['href']
     url = url.match(%r{(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+\#-]*[\w@?^=%&/~+\#-])?})
 

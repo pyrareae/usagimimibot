@@ -1,14 +1,13 @@
 # frozen_string_literal: true
 
 require 'ostruct'
-require 'singleton'
+require 'sequel'
 
 module Usagi
-  class Storage < OpenStruct
-  end
+  DB = Sequel.connect('sqlite://detabesu.db')
   class<<self
     def settings
-      @settings ||= Storage.new
+      @settings ||= OpenStruct.new
     end
   end
 end
