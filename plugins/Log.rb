@@ -37,10 +37,16 @@ class Log
   match /log (.+)/, method: :return_log
   def return_log(m, param)
     lines = param.to_i || 20
-    msg = @messages.where(channel: m.channel.name).order(:time).limit(lines).all.map do |m|
-      # "[#{m[:time]}|#{m[:]}|#{m[:message]}]"
-      m.inspect
-    end.join('')
+    msg = @messages.where(channel: m.channel.name).reverse(:time).limit(lines).all.map do |m|
+      "[#{m[:time].gmtime.strftime('%m/%d/%y %H:%M:%S')}|#{m[:nick]}|#{m[:message]}]"
+      # m.inspect
+    end.join(', ')
     m.reply msg
+  end
+
+  match /seen (.+)/, method: :seen
+  def seen(m, user)
+    msg = @messages.reverse(:time).where(channel: m.channel.name, nick: user).limit(1).first
+    m.reply "#{user} seen @ #{msg[:time].gmtime.strftime('%m/%d/%y %H:%M:%S')} saying \"#{msg[:message]}\"" if msg
   end
 end
