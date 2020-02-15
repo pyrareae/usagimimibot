@@ -109,7 +109,7 @@ bot = Cinch::Bot.new do
     c.channels = cfg['channels']
     c.nick = cfg['nick']
     c.plugins.plugins = [PluginMan]
-    c.plugins.prefix = /^#{cfg['prefix']}/ || /^!/
+    c.plugins.prefix = /^#{Regexp.escape cfg['prefix']}/ || /^!/
     if cfg['sasl']
       c.sasl.username = cfg['sasl']['username'] || cfg['nick']
       c.sasl.password = cfg['sasl']['password']
