@@ -5,6 +5,7 @@ require_relative '../util.rb'
 
 class Log
   include Cinch::Plugin
+  LOG_MAX = 10_000
   def initialize(*)
     super
 
@@ -19,6 +20,7 @@ class Log
 
     @messages = Usagi::DB[:messages]
     @sema = Mutex.new
+    Usagi::STORE['log_counter'] ||= 0
   end
 
   match /.*/, use_prefix: false
@@ -31,6 +33,10 @@ class Log
         server: m.server,
         nick: m.user.nick
       )
+      Usagi::STORE['log_counter'] += 1
+    end
+    if Usagi::STORE['log_counter'] > LOG_MAX
+      trim
     end
   end
 
@@ -49,4 +55,19 @@ class Log
     msg = @messages.reverse(:time).where(channel: m.channel.name, nick: user).limit(1).first
     m.reply "#{user} seen @ #{msg[:time].gmtime.strftime('%m/%d/%y %H:%M:%S')} saying \"#{msg[:message]}\"" if msg
   end
-end
+
+  def trim(n=LOG_MAX)
+    Usagi::DB.run %Q{
+      DELETE FROM `messages`
+      WHERE id NOT IN (
+        SELECT id
+        FROM (
+          SELECT id
+          FROM `messages`
+          ORDER BY time DESC
+          LIMIT #{n} -- keep this many records
+        ) foo
+      )
+    }
+  end
+end 
