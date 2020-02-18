@@ -57,6 +57,7 @@ class Log
   end
 
   def trim(n=LOG_MAX)
+    Usagi::STORE['log_counter'] = 0
     Usagi::DB.run %Q{
       DELETE FROM `messages`
       WHERE id NOT IN (
