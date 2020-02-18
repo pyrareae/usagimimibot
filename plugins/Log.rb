@@ -5,7 +5,6 @@ require_relative '../util.rb'
 
 class Log
   include Cinch::Plugin
-  LOG_MAX = 10_000
   def initialize(*)
     super
 
@@ -20,7 +19,7 @@ class Log
 
     @messages = Usagi::DB[:messages]
     @sema = Mutex.new
-    Usagi::STORE['log_counter'] ||= 0
+    Usagi::STORE['log_max'] ||= 10_000
   end
 
   match /.*/, use_prefix: false
@@ -33,9 +32,8 @@ class Log
         server: m.server,
         nick: m.user.nick
       )
-      Usagi::STORE['log_counter'] += 1
     end
-    if Usagi::STORE['log_counter'] > LOG_MAX
+    if @messages.count > Usagi::STORE['log_max']
       trim
     end
   end
@@ -56,8 +54,7 @@ class Log
     m.reply "#{user} seen @ #{msg[:time].gmtime.strftime('%m/%d/%y %H:%M:%S')} saying \"#{msg[:message]}\"" if msg
   end
 
-  def trim(n=LOG_MAX)
-    Usagi::STORE['log_counter'] = 0
+  def trim(n=Usagi::STORE['log_max'])
     Usagi::DB.run %Q{
       DELETE FROM `messages`
       WHERE id NOT IN (
