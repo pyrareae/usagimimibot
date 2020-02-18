@@ -9,10 +9,10 @@ module Usagi
       cfg['groups'].each_pair do |name, _members|
         bot.loggers.debug 'creating helper for %s' % name
         send(:define_method, "#{name}?") do |m, &block|
-          bot.loggers.warn "Failed auth attempt #{m.user}"
           if cfg['groups'][name].include?(m.user.nick) || cfg['groups']['admin'].include?(m.user.nick)
             block.call
           else
+            bot.loggers.warn "Failed auth attempt #{m.user}"
             m.reply 'You are not in group %s' % name
           end
         end
