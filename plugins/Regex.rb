@@ -4,11 +4,11 @@ require 'cinch'
 require_relative '../util.rb'
 
 class Regex
-  LIMIT = 250
   include Cinch::Plugin
 
   def initialize(*arg)
     @log = Usagi::DB[:messages]
+    Usagi::STORE['re_search_limit'] ||= 250
     super
   end
 
@@ -25,7 +25,7 @@ class Regex
     # replace_str = m.message[%r{/.*/(.*)?/}, 1]
     count = 0
     #sqlite doesn't do fancy regex  
-    msg = @log.where(channel: m.channel.name, server: m.server).exclude(nick: bot.nick).reverse(:time).limit(LIMIT).find do |log| 
+    msg = @log.where(channel: m.channel.name, server: m.server).exclude(nick: bot.nick).reverse(:time).limit(Usagi::STORE['re_search_limit']).find do |log| 
       count+=1
       log[:message][%r{#{matcher}}] &&
       log[:message] != m.message &&
