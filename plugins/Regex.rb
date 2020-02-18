@@ -12,24 +12,35 @@ class Regex
     super
   end
 
-  match %r{s/.*}, use_prefix: false
+ match %r{^s/.*}, use_prefix: false
   def execute(m)
-    regex_str = m.message[%r{/(.*)/}, 1]
+    regex_str = m.message[%r{/(.*?)/}, 1]
     find_str = m.message[%r{/(.*)$}, 1]
     matcher = regex_str || find_str
-    replace_str = m.message[%r{/.*/(.*)}, 1]
+    replace_str = m.message[%r{/.*?/(.* )}, 1]
+
+    # _, regex_str, replace_str = m.message[%r{^s/(.*?)/(.*?)(/|$)}]
+    # find_str = m.message[%r{^s/(.*)$}, 1]
+    # matcher = regex_str || find_str
+    # replace_str = m.message[%r{/.*/(.*)?/}, 1]
+    count = 0
     #sqlite doesn't do fancy regex  
-    msg = @log.where(channel: m.channel.name, server: m.server).reverse(:time).limit(LIMIT).find {|log| log[:message][%r{#{matcher}}] && log[:message] != m.message }
+    msg = @log.where(channel: m.channel.name, server: m.server).exclude(nick: bot.nick).reverse(:time).limit(LIMIT).find do |log| 
+      count+=1
+      log[:message][%r{#{matcher}}] &&
+      log[:message] != m.message &&
+      !log[:message][/^s\/.*/]
+    end
 
     if !!msg
-      timestamp = msg[:time].gmtime.strftime('%m/%d/%y %H:%M:%S')
+      timestamp = count > 20 ? "(#{msg[:nick]} #{msg[:time].gmtime.strftime('%m/%d/%y %H:%M:%S')}) " : ''
       if replace_str && !replace_str.empty?
-        m.reply "(#{msg[:nick]}|#{timestamp}) #{msg[:message].gsub /#{regex_str}/, replace_str}"
+        m.reply "#{timestamp}#{msg[:message].gsub /#{regex_str}/, replace_str}"
       else
-        m.reply "(#{msg[:nick]}|#{timestamp}) #{msg[:message]}"
+        m.reply "#{timestamp}#{msg[:message]}"
       end
     else
-      m.reply "No matches for /#{regex_str}/"
+      m.reply "No matches for #{matcher}"
     end
   end
 end
