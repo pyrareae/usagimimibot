@@ -27,6 +27,7 @@ module Usagi
     end
 
     def [](key)
+      key = key.to_s
       entry = DB[:usagi_store].where(key: key).first
       return unless entry
       throw 'Invalid stored type' unless ALLOWED_TYPES.include? entry[:type]
@@ -36,9 +37,10 @@ module Usagi
     end
 
     def []=(key, value)
+      key = key.to_s
       type = 'String'
-      type = 'Float' if value.is_a?(Float)
-      type = 'Float' if value.is_a?(Integer)
+      type = 'Float' if value.is_a?(Float) || (value.is_a?(String) && value&.is_float?)
+      type = 'Integer' if value.is_a?(Integer)  || (value.is_a?(String) && value&.is_i?)
       @sema.synchronize do
         if DB[:usagi_store].where(key: key).first
           DB[:usagi_store].where(key: key).update(value: value, type: type)
@@ -55,4 +57,12 @@ class String
   def from_json
     JSON.parse(self, object_class: OpenStruct)
   end
+
+  def is_i?
+    /\A[-+]?\d+\z/ === self
+  end
+
+  def is_float?
+  !!Float(self) rescue false
+end
 end
