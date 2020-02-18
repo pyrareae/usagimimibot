@@ -17,7 +17,7 @@ class Regex
     regex_str = m.message[%r{/(.*?)/}, 1]
     find_str = m.message[%r{/(.*)$}, 1]
     matcher = regex_str || find_str
-    replace_str = m.message[%r{/.*?/(.* )}, 1]
+    replace_str = m.message[%r{/.*?/(.*)}, 1]
 
     # _, regex_str, replace_str = m.message[%r{^s/(.*?)/(.*?)(/|$)}]
     # find_str = m.message[%r{^s/(.*)$}, 1]
