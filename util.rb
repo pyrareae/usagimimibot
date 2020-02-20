@@ -37,7 +37,7 @@ module Usagi
       throw 'Invalid stored type' unless ALLOWED_TYPES.include? entry[:type]
 
       val = entry[:value]
-      return (val == BOOL_TRUE ? 'true' : 'false') if entry[:type] == 'Boolean'
+      return (val == BOOL_TRUE) if entry[:type] == 'Boolean'
       method(entry[:type]).call val
     end
 
@@ -47,7 +47,7 @@ module Usagi
       # type = 'String'
       # type = 'Float' if value.is_a?(Float) || (value.is_a?(String) && value&.is_float?)
       # type = 'Integer' if value.is_a?(Integer)  || (value.is_a?(String) && value&.is_i?)
-      if value[/(^\'.*\'$)|(^\".*\"$)/]
+      if value.is_a?(String) && value[/(^\'.*\'$)|(^\".*\"$)/]
         value = value[/^['"](.*)['"]$/, 1]
         type = "String"
       elsif value.is_a?(Float) || (value.is_a?(String) && value&.is_float?)
