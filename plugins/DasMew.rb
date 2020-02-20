@@ -74,12 +74,13 @@ class DasMew
       case param
       when 'dump'
         m.reply Usagi::DB[:usagi_store].all.map{|s| "#{s[:key]} = #{s[:value]}(#{s[:type]})"}.join(', ')
-      when /^\[.*?\]\=(.+)/
+      when /^\[.*?\]\ ?= ?(.+)/
         _, key, val = *param.match(/^\[(.*?)\]\ ?= ?(.+)/)
         Usagi::STORE[key] = val
         m.reply 'Value updated!'
       when /^\[.*\]$/
-        m.reply Usagi::STORE[param[/\[(.*)\]/, 1]]
+        value = Usagi::STORE[param[/\[(.*)\]/, 1]]
+        m.reply value.nil? ? 'nil' : Usagi::STORE[param[/\[(.*)\]/, 1]]
       end
     end
   end

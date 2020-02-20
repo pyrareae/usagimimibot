@@ -13,7 +13,11 @@ module Usagi
   end
 
   class Store
-    ALLOWED_TYPES = %w[String Float Integer].freeze
+    ALLOWED_TYPES = %w[String Float Integer Boolean].freeze
+    BOOL_TRUE = 't'
+    BOOL_FALSE = 'f'
+    TRUTHY = %w[t T true True]
+    FALSY = %w[f F False false]
     include Singleton
     def initialize
       DB.create_table? :usagi_store do
@@ -33,16 +37,33 @@ module Usagi
       throw 'Invalid stored type' unless ALLOWED_TYPES.include? entry[:type]
 
       val = entry[:value]
+      return (val == BOOL_TRUE ? 'true' : 'false') if entry[:type] == 'Boolean'
       method(entry[:type]).call val
     end
 
     def []=(key, value)
       key = key.to_s
       type = 'String'
-      type = 'Float' if value.is_a?(Float) || (value.is_a?(String) && value&.is_float?)
-      type = 'Integer' if value.is_a?(Integer)  || (value.is_a?(String) && value&.is_i?)
+      # type = 'String'
+      # type = 'Float' if value.is_a?(Float) || (value.is_a?(String) && value&.is_float?)
+      # type = 'Integer' if value.is_a?(Integer)  || (value.is_a?(String) && value&.is_i?)
+      if value[/(^\'.*\'$)|(^\".*\"$)/]
+        value = value[/^['"](.*)['"]$/, 1]
+        type = "String"
+      elsif value.is_a?(Float) || (value.is_a?(String) && value&.is_float?)
+        type = 'Float'
+      elsif value.is_a?(Integer)  || (value.is_a?(String) && value&.is_i?)
+        type = 'Integer'
+      elsif value == 'nil' || value.nil?
+        type = 'nil'
+      elsif TRUTHY.include?(value) || FALSY.include?(value)
+        type = 'Boolean'
+        value = TRUTHY.include?(value) ? BOOL_TRUE : BOOL_FALSE
+      end
       @sema.synchronize do
-        if DB[:usagi_store].where(key: key).first
+        if type == 'nil'
+          DB[:usagi_store].where(key: key).delete
+        elsif DB[:usagi_store].where(key: key).first
           DB[:usagi_store].where(key: key).update(value: value, type: type)
         else
           DB[:usagi_store].insert(key: key, value: value.to_s, type: type)
