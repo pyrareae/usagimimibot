@@ -56,7 +56,7 @@ module Usagi
         type = 'Integer'
       elsif value == 'nil' || value.nil?
         type = 'nil'
-      elsif TRUTHY.include?(value) || FALSY.include?(value)
+      elsif value.is_a?(TrueClass) || value.is_a?(FalseClass) || TRUTHY.include?(value) || FALSY.include?(value)
         type = 'Boolean'
         value = TRUTHY.include?(value) ? BOOL_TRUE : BOOL_FALSE
       end

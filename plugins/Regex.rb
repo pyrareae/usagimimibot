@@ -9,6 +9,7 @@ class Regex
   def initialize(*arg)
     @log = Usagi::DB[:messages]
     Usagi::STORE['re_search_limit'] ||= 250
+    Usagi::STORE[:real_regex] = false if Usagi::STORE[:real_regex].nil?
     super
   end
 
@@ -24,10 +25,11 @@ class Regex
     # matcher = regex_str || find_str
     # replace_str = m.message[%r{/.*/(.*)?/}, 1]
     count = 0
+    use_re = Usagi::STORE[:real_regex]
     #sqlite doesn't do fancy regex  
     msg = @log.where(channel: m.channel.name, server: m.server).exclude(nick: bot.nick).reverse(:time).limit(Usagi::STORE['re_search_limit']).find do |log| 
       count+=1
-      log[:message][%r{#{matcher}}] &&
+      (use_re ? log[:message][%r{#{matcher}}] : log[:message][matcher]) &&
       log[:message] != m.message &&
       !log[:message][/^s\/.*/]
     end

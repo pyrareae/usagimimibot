@@ -80,7 +80,7 @@ class DasMew
       when /^\[.*?\]\ ?= ?(.+)/
         _, key, val = *param.match(/^\[(.*?)\]\ ?= ?(.+)/)
         Usagi::STORE[key] = val
-        m.reply 'Value updated!'
+        m.reply Usagi::STORE[key].inspect
       when /^\[.*\]$/
         value = Usagi::STORE[param[/\[(.*)\]/, 1]]
         m.reply value.nil? ? 'nil' : Usagi::STORE[param[/\[(.*)\]/, 1]]
