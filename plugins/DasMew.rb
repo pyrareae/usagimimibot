@@ -33,6 +33,9 @@ class DasMew
 
   match /meow/i, method: :meow, use_prefix: false
   def meow(m)
+    meow = Usagi::STORE[:meow]
+    Usagi::STORE[:meow] = true if meow.nil?
+    return unless Usagi::STORE[:meow]
     m.reply ['Meow!', 'Nya!', 'Mew', ':3', 'Meow~', 'Nya~'].sample
   end
 
@@ -56,7 +59,7 @@ class DasMew
   match /([・゜。].*){4}/i, method: :get_duck, use_prefix: false
   def get_duck(m)
     return unless rand < 0.10
-    t = 60 * 5
+    t = Usagi::STORE[:bef_wait] || 60 * 5
     @take_duck[m.channel] = true
     # m.reply "stealing duck in #{t} seconds..."
     Thread.new { sleep t; m.reply ',bef' if @take_duck[m.channel] }
@@ -83,5 +86,13 @@ class DasMew
         m.reply value.nil? ? 'nil' : Usagi::STORE[param[/\[(.*)\]/, 1]]
       end
     end
+  end
+
+  match "system", method: :system_info
+  def system_info(m)
+    vm = `vmstat -s`.lines
+    total_ram = vm.find{|l| l["total"]}.lstrip.chomp
+    free_ram = vm.find{|l| l["free memory"]}.lstrip.chomp
+    m.reply "kernel #{`uname -r`.chomp}, #{RUBY_DESCRIPTION}, #{total_ram}, #{free_ram}"
   end
 end
