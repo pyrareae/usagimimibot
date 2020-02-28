@@ -15,6 +15,7 @@ class DasMew
   end
 
   match /echo (.+)/, method: :echo
+  match /<echo (.+)>/, method: :echo, use_prefix: false
   def echo(m, msg)
     m.reply msg.to_s
   end
