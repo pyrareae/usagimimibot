@@ -11,7 +11,11 @@ class Eval
   match /rb (.*)/
   def execute(m, msg)
     admin?(m) do
-      m.reply SafeRuby.eval(msg)
+      begin
+        m.reply SafeRuby.eval(msg)
+      rescue => e
+        m.reply e.message
+      end
     end
   end
 end

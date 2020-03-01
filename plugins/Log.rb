@@ -34,7 +34,7 @@ class Log
       )
     end
     if @messages.count > Usagi::STORE['log_max']
-      trim
+      trim Usagi::STORE[:log_max] - 100 # keep from executing every message
     end
   end
 
@@ -46,6 +46,11 @@ class Log
       # m.inspect
     end.join(', ')
     m.reply msg
+  end
+
+  match 'loglen', method: :log_len
+  def log_len m
+    m.reply "#{@messages.count} lines across all channels, #{@messages.where(channel: m.channel.name).count} in current channel"
   end
 
   match /seen (.+)/, method: :seen
