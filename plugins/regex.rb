@@ -15,7 +15,7 @@ class Regex
 
  match %r{^!/.*}, use_prefix: false
   def execute(m)
-    r = m.message.strip.match(/!\/(.*?[^\\\/])\/(.*[^\\\/])\/?/)
+    r = m.message.strip.match(/!\/([^\\\/]*?)\/([^\\\/]*)\/?/)
     r ||= m.message.strip.match(/!\/(.*[^\\\/])\/?/)
     matcher = r[1]
     replace_str = r[2]
@@ -31,7 +31,7 @@ class Regex
 
     if !!msg
       timestamp = count > 20 ? "(#{msg[:nick]} #{msg[:time].gmtime.strftime('%m/%d/%y %H:%M:%S')}) " : ''
-      if replace_str && !replace_str.empty?
+      if replace_str
         m.reply "#{timestamp}#{msg[:message].gsub /#{matcher}/, replace_str}"
       else
         m.reply "#{timestamp}#{msg[:message]}"

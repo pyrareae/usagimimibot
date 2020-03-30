@@ -51,4 +51,11 @@ class RegexTest < TestBase
     @plugin.execute(@mock)
     @mock.verify
   end
+
+  test 'replace with blank' do
+    @mock.expect :reply, nil, ['']
+    2.times {@mock.expect :message, '!/meow//'}
+    @plugin.execute(@mock)
+    @mock.verify
+  end
 end
