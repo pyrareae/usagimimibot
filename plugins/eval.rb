@@ -2,7 +2,7 @@
 
 require 'safe_ruby'
 require 'cinch'
-require_relative 'Guard.rb'
+require_relative 'guard.rb'
 
 class Eval
   include Cinch::Plugin

@@ -3,13 +3,13 @@
 require 'cinch'
 require 'zalgo'
 require_relative '../util.rb'
-require_relative 'Guard.rb'
+require_relative 'guard.rb'
 
 class DasMew
   include Cinch::Plugin
   include Usagi::Guard
 
-  def initialize(*args)
+  def initialize(*)
     super
     @take_duck = {}
   end

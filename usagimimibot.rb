@@ -37,11 +37,12 @@ class PluginMan
       @bot.loggers.debug '[PluginMan] loading ' + file
       @status << { name: file.chomp('.rb') }
       begin
+        class_name = file.chomp('.rb').split('_').collect(&:capitalize).join
         if @cfg['blacklist'].include? file.chomp('.rb')
           @bot.loggers.debug "[PluginMan] #{file} skipping"
           @status.last[:status] = :disabled
         elsif load "plugins/#{file}"
-          plugin = Kernel.const_get(file.chomp('.rb'))
+          plugin = Kernel.const_get(class_name)
           # plugin.db = @db if defined?(plugin.db=1)
           @list << plugin
           @status.last[:status] = :ok

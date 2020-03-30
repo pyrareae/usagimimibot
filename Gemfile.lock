@@ -1,7 +1,6 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    awesome_print (1.8.0)
     byebug (10.0.2)
     childprocess (0.8.0)
       ffi (~> 1.0, >= 1.0.11)
@@ -17,9 +16,13 @@ GEM
       concurrent-ruby (~> 1.0)
     mini_magick (4.8.0)
     mini_portile2 (2.3.0)
+    minitest (5.14.0)
+    minitest-utils (0.4.6)
+      minitest
     nokogiri (1.8.2)
       mini_portile2 (~> 2.3.0)
     open_uri_redirections (0.2.1)
+    rake (13.0.1)
     safe_ruby (1.0.4)
       childprocess (>= 0.3.9)
     sequel (5.29.0)
@@ -30,14 +33,16 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  awesome_print
   byebug
   cinch
   drawille
   faker
   mini_magick
+  minitest
+  minitest-utils
   nokogiri
   open_uri_redirections
+  rake
   safe_ruby
   sequel
   sqlite3

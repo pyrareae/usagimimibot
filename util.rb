@@ -5,7 +5,11 @@ require 'sequel'
 require 'singleton'
 
 module Usagi
-  DB = Sequel.connect('sqlite://detabesu.db')
+  if ENV['ENVIRONMENT'] == 'test'
+    DB = Sequel.sqlite
+  else
+    DB = Sequel.connect('sqlite://detabesu.db')
+  end
   class<<self
     def settings
       @settings ||= OpenStruct.new

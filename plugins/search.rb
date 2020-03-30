@@ -9,7 +9,7 @@ require 'nokogiri'
 require 'net/http'
 require 'ostruct'
 require_relative '../util'
-require_relative 'Image'
+require_relative 'image'
 
 module Usagi::Search
   def search(query)

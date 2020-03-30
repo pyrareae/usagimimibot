@@ -15,7 +15,8 @@ class Regex
 
  match %r{^s/.*}, use_prefix: false
   def execute(m)
-    r = m.message.strip.match(%r{s/(.*[^\\])/(.*[^\\])/?})
+    r = m.message.strip.match(/s\/(.*?[^\\\/])\/(.*[^\\\/])\/?/)
+    r ||= m.message.strip.match(/s\/(.*[^\\\/])\/?/)
     matcher = r[1]
     replace_str = r[2]
     count = 0
