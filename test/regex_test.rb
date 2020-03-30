@@ -11,7 +11,7 @@ class RegexTest < TestBase
       String :server
       String :nick
       DateTime :time
-    end 
+    end
     Usagi::DB[:messages] << {
         message: 'meow',
         time: Time.now,
@@ -20,6 +20,7 @@ class RegexTest < TestBase
         nick: 'mew'
       }
   end
+
   setup do
     @bot = Cinch::Bot.new {
       self.loggers.clear
@@ -37,7 +38,7 @@ class RegexTest < TestBase
     @mock.verify
   end
 
-  test 'regex command withoug trailing slash' do
+  test 'regex command without trailing slash' do
     @mock.expect :reply, nil, ['nya']
     2.times {@mock.expect :message, 's/meow/nya'}
     @plugin.execute(@mock)
