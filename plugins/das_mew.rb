@@ -96,4 +96,11 @@ class DasMew
     free_ram = vm.find{|l| l["free memory"]}.lstrip.chomp
     m.reply "kernel #{`uname -r`.chomp}, #{RUBY_DESCRIPTION}, #{total_ram}, #{free_ram}"
   end
+
+  match 'test', method: :run_tests
+  def run_tests(m)
+    admin?(m) or return
+    
+    m.reply `rake test`.split("\n").reverse.find {|l| l =~ /assertion/}
+  end
 end

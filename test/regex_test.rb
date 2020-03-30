@@ -35,27 +35,27 @@ class RegexTest < TestBase
     @mock.expect :reply, nil, ['nya']
     2.times {@mock.expect :message, '!/meow/nya/'}
     @plugin.execute(@mock)
-    @mock.verify
+    assert @mock.verify
   end
 
   test 'regex command without trailing slash' do
     @mock.expect :reply, nil, ['nya']
     2.times {@mock.expect :message, '!/meow/nya'}
     @plugin.execute(@mock)
-    @mock.verify
+    assert @mock.verify
   end
 
   test 'find message' do
     @mock.expect :reply, nil, ['meow']
     3.times {@mock.expect :message, '!/meow'}
     @plugin.execute(@mock)
-    @mock.verify
+    assert @mock.verify
   end
 
   test 'replace with blank' do
     @mock.expect :reply, nil, ['']
     2.times {@mock.expect :message, '!/meow//'}
     @plugin.execute(@mock)
-    @mock.verify
+    assert @mock.verify
   end
 end
