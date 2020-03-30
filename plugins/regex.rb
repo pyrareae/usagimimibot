@@ -13,10 +13,10 @@ class Regex
     super
   end
 
- match %r{^s/.*}, use_prefix: false
+ match %r{^!/.*}, use_prefix: false
   def execute(m)
-    r = m.message.strip.match(/s\/(.*?[^\\\/])\/(.*[^\\\/])\/?/)
-    r ||= m.message.strip.match(/s\/(.*[^\\\/])\/?/)
+    r = m.message.strip.match(/!\/(.*?[^\\\/])\/(.*[^\\\/])\/?/)
+    r ||= m.message.strip.match(/!\/(.*[^\\\/])\/?/)
     matcher = r[1]
     replace_str = r[2]
     count = 0
