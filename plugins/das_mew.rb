@@ -103,4 +103,17 @@ class DasMew
     
     m.reply `rake test`.split("\n").reverse.find {|l| l =~ /assertion/}
   end
+
+  match /userstats (.*)/, method: :user_stats
+  def user_stats m, username
+    messages = Usagi::DB[:messages].reverse(:time).where(channel: m.channel.name, nick: username)
+    m.reply 'Top words: ' + messages.flat_map {_1[:message].split(' ')}
+                    .tally
+                    .to_a
+                    .sort_by {_1[1]}
+                    .reverse
+                    .slice(0..10)
+                    .map {"#{_1.first}: #{_1.last}"}
+                    .join(', ')
+  end
 end
