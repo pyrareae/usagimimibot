@@ -32,6 +32,6 @@ class Weather
       return
     end
     ww = w.weather.first
-    m.reply("#{w.name}: #{ww.description} | #{k2f w.main.temp}f/#{k2c w.main.temp}c | #{w.clouds&.all}% cloudy | #{w.main.humidity} humidity | wind: #{w.wind&.speed}m/s")
+    m.reply("#{w.name}: #{ww.description} | #{k2f w.main.temp}f/#{k2c w.main.temp}c | #{w.clouds&.all}% cloudy | #{w.main.humidity}% humidity | wind: #{w.wind&.speed}m/s")
   end 
 end
