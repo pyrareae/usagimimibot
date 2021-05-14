@@ -4,7 +4,10 @@ require 'cinch'
 
 class JoinPart
   include Cinch::Plugin
+  extend Usagi::Help
 
+  info 'join', 'Join channel. join <channel>'
+  info 'part', 'Leave channel. part [channel]'
   match /join (.+)/, method: :join
   match /part(?: (.+))?/, method: :part
 

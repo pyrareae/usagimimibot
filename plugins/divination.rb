@@ -1,11 +1,12 @@
 require 'cinch'
-require_relative '../util.rb'
 
 class Divination
   include Cinch::Plugin
   include Usagi::Guard
   extend Usagi::Sugar
+  extend Usagi::Help
 
+  info 'tarot', 'Draw tarot card'
   command /tarot/ do |m|
     card = cards.sample
     m.reply "#{card}#{rand>0.5 ? ' [reversed]' : ''} astrology.com/tarot/card-meanings/#{card.downcase.gsub(/\d/, NUMS.map.with_index{[_2.to_s, _1]}.to_h).gsub(/\s+/, '-')}"

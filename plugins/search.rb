@@ -8,7 +8,6 @@ require 'cgi'
 require 'nokogiri'
 require 'net/http'
 require 'ostruct'
-require_relative '../util'
 require_relative 'image'
 
 module Usagi::Search
@@ -58,10 +57,14 @@ end
 
 class Search
   include Cinch::Plugin
+  extend Usagi::Help
+  info 's', 'Search for query. s <query>'
   match /s (.+)/, method: :search
   match /What's (.+), precious/i, use_prefix: false, method: :execute
   # match /a (.+)/, method: :answer
+  info 'wiki', 'Wiki search'
   match /wiki (.+)/, method: :wiki
+  info 'i', 'Image search'
   match /i (.*)/, method: :image_search
 
   # search with ddg instant answer api, very buggy still

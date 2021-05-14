@@ -27,6 +27,9 @@ end
 
 class Image
   include Cinch::Plugin
+  extend Usagi::Help
+
+  info 'draw_image', 'Draw image in braille from url. draw_iamge <url>'
   match /draw_image (.*)/
   def execute(m, msg)
     m.reply Usagi::Image.draw msg, height: 8

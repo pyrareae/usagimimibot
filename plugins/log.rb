@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
 require 'cinch'
-require_relative '../util.rb'
 
 class Log
   include Cinch::Plugin
+  extend Usagi::Help
+
   def initialize(*)
     super
 
@@ -38,6 +39,7 @@ class Log
     end
   end
 
+  info 'log', 'Return channel log. log [lines]'
   match /log (.+)/, method: :return_log
   def return_log(m, param)
     lines = param.to_i || 20
@@ -48,11 +50,13 @@ class Log
     m.reply msg
   end
 
+  info 'loglen', 'Return log length'
   match 'loglen', method: :log_len
   def log_len m
     m.reply "#{@messages.count} lines across all channels, #{@messages.where(channel: m.channel.name).count} in current channel"
   end
 
+  info 'seen', 'Report when user was last seen. seen <user>'
   match /seen (.+)/, method: :seen
   def seen(m, user)
     msg = @messages.reverse(:time).where(channel: m.channel.name, nick: user).limit(1).first

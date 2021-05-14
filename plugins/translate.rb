@@ -5,6 +5,7 @@ require 'cgi'
 
 class Translate
   include Cinch::Plugin
+  extend Usagi::Help
 
   #match /2en (.+)/, method: :auto2eng
   match /trans (.+)/, method: :trans
@@ -20,6 +21,7 @@ class Translate
   #  match /2#{lang} (.+)/, method: mname
   #end
 
+  info 'translate', 'Translate text. 2<lang> <text>'
   match /2(\w+) (.+)/, method: :autotrans
   def autotrans(m, code, query)
     m.reply fetch(query, from: 'auto', to: code)

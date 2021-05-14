@@ -2,10 +2,10 @@ require 'cinch'
 require 'json'
 require 'ostruct'
 require 'net/http'
-require_relative '../util'
 
 class Weather
   include Cinch::Plugin
+  extend Usagi::Help
   def query_weather(q='')
     uri = URI('https://api.openweathermap.org/data/2.5/weather')
     uri.query = URI.encode_www_form({q: q, appid: Usagi.settings.cfg['api_keys']['openweather']})
@@ -22,6 +22,7 @@ class Weather
     (k - 273.15).round(2)
   end
 
+  info 'we', 'Fetch weather. we <query>'
   match /we (.+)/
 
   def execute(m, query)
