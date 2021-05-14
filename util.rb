@@ -4,6 +4,8 @@ require 'ostruct'
 require 'sequel'
 require 'singleton'
 
+$help_data ||= {} #bad bad bad
+
 module Usagi
   if ENV['ENVIRONMENT'] == 'test'
     DB = Sequel.sqlite
@@ -84,6 +86,17 @@ module Usagi
       define_method(name, &block)
     end
   end
+
+  
+  module Help
+    def info command, message
+      #help is already taken
+      $help_data[self.name.downcase] ||= {}
+      $help_data[self.name.downcase][command.downcase] = message
+      puts 'HELP DATA'
+      pp $help_data
+    end
+  end
 end
 
 class String
@@ -97,5 +110,5 @@ class String
 
   def is_float?
   !!Float(self) rescue false
-end
+  end
 end

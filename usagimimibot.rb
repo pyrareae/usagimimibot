@@ -72,7 +72,7 @@ class PluginMan
 
   def status_message
     c = { ok: :green, error: :red, fail: :red, disabled: :yellow }
-    @status.reduce([]) { |m, i| m << "[#{Format(c[i[:status]], :black, i[:name])}]" }.join('')
+    @status.reduce([]) { |m, i| m << Format(c[i[:status]], :black, "[#{i[:name]}]") }.join('')
   end
 
   def reload_plugins(m, msg)

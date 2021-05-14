@@ -12,29 +12,7 @@ class Divination
   end
 
   def cards
-    cards = [
-      'the fool',
-      'the magician',
-      'the high priestess',
-      'the empress',
-      'the emperor',
-      'the hierophant',
-      'the lovers',
-      'the chariot',
-      'justice',
-      'the hermit',
-      'wheel of fortune',
-      'strength',
-      'the hanged man',
-      'death',
-      'temperance',
-      'the devil',
-      'the tower',
-      'the star',
-      'the moon',
-      'the sun',
-      'judgement',
-      'the world',
+    cards = ['the fool','the magician','the high priestess','the empress','the emperor','the hierophant','the lovers','the chariot','justice','the hermit','wheel of fortune','strength','the hanged man','death','temperance','the devil','the tower','the star','the moon','the sun','judgement','the world',
       ['wands','pentacles','cups','swords'].map do |suit|
         [
           (2..10).map {|n|"#{n} of #{suit}"},
@@ -44,17 +22,5 @@ class Divination
     ].flatten.map{|card| card.split(" ").map{|word| ['of'].include?(word) ? word : word.capitalize}.join(" ")}
   end
 
-  NUMS = %w[
-    zero
-    one
-    two
-    three
-    four
-    five
-    six
-    seven
-    eight
-    nine
-    ten
-  ]
+  NUMS = %w[ zero one two three four five six seven eight nine ten ]
 end

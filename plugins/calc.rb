@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'cinch'
+require_relative '../util'
 
 module Usagi::Calc
   def tokenize(s)
@@ -74,7 +75,9 @@ end
 class Calc
   include Cinch::Plugin
   include Usagi::Calc
+  extend Usagi::Help
 
+  info 'calc', 'Simple calculator. Usage: calc <expression>'
   match /calc (.*)/
   def execute(m, msg)
     m.reply '%g' % calc(msg)
