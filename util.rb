@@ -76,6 +76,14 @@ module Usagi
     end
   end
   STORE = Store.instance
+
+  module Sugar
+    def command(regex, &block)
+      name = (0..20).map{('a'..'z').to_a.sample}.join.to_sym
+      match regex, method: name
+      define_method(name, &block)
+    end
+  end
 end
 
 class String

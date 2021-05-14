@@ -55,7 +55,7 @@ class PluginMan
         @bot.loggers.debug "Exception loading plugin: #{file}"
         @bot.loggers.debug "Exception class: #{e.class.name}"
         @bot.loggers.debug "Exception message: #{e.message}"
-        @bot.loggers.debug "Exception backtrace: #{e.backtrace}"
+        @bot.loggers.debug "Exception backtrace: #{e.backtrace.join("\n")}"
       end
     end
     @bot.plugins.register_plugins(@list)
