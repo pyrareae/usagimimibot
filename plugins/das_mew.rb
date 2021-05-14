@@ -2,29 +2,32 @@
 
 require 'cinch'
 require 'zalgo'
-require_relative '../util.rb'
 require_relative 'guard.rb'
 
 class DasMew
   include Cinch::Plugin
   include Usagi::Guard
+  extend Usagi::Help
 
   def initialize(*)
     super
     @take_duck = {}
   end
 
+  info 'echo', 'Repeat text. echo <message>'
   match /echo (.+)/, method: :echo
   match /<echo (.+)>/, method: :echo, use_prefix: false
   def echo(m, msg)
     m.reply msg.to_s
   end
 
+  info 'me', 'message <message>'
   match /me (.+)/, method: :action
   def action(m, msg)
     m.action msg
   end
 
+  info 'nick', 'Change bot nick. nick <new nick>'
   match /nick (.+)/, method: :nick
   def nick(m, msg)
     admin?(m) do
@@ -32,6 +35,7 @@ class DasMew
     end
   end
 
+  info 'meow', 'meow'
   match /meow/i, method: :meow, use_prefix: false
   def meow(m)
     meow = Usagi::STORE[:meow]
@@ -40,11 +44,13 @@ class DasMew
     m.reply ['Meow!', 'Nya!', 'Mew', ':3', 'Meow~', 'Nya~'].sample
   end
 
+  info 'color', 'Randomly colorize text. color <text>'
   match /color (.*)/, method: :color
   def color(m, msg)
     m.reply "\x03#{rand(0..15)}" + msg
   end
 
+  info 'rainbow', 'Make text rainbow colored. rainbow <text>'
   match /rainbow (.*)/, method: :rainbow
   def rainbow(m, msg)
     c = [2, 3, 9, 8, 7, 4, 6].cycle
@@ -52,6 +58,7 @@ class DasMew
     m.reply msg.split('').reduce('') { |s, i| s + format("\x03%02d%s", c.next, i) }
   end
 
+  info 'zalgo', 'Add zalgo effect to text. zalgo <text>'
   match /zalgo (.+)/, method: :zalgo
   def zalgo(m, msg)
     m.reply Zalgo.he_comes msg
@@ -71,6 +78,7 @@ class DasMew
     @take_duck[m.channel] = false
   end
 
+  info 'store', 'Store/update/retrieve value from system key value table. store[key](=value) | store dump'
   match /store ?(.+)/, method: :store
   def store(m, param)
     # m.reply param
@@ -89,6 +97,7 @@ class DasMew
     end
   end
 
+  info 'system', 'Print system info'
   match "system", method: :system_info
   def system_info(m)
     vm = `vmstat -s`.lines
@@ -97,6 +106,7 @@ class DasMew
     m.reply "kernel #{`uname -r`.chomp}, #{RUBY_DESCRIPTION}, #{total_ram}, #{free_ram}"
   end
 
+  info 'test', 'Run system tests and report results'
   match 'test', method: :run_tests
   def run_tests(m)
     admin?(m) or return

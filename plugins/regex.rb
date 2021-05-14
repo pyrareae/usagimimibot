@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 require 'cinch'
-require_relative '../util.rb'
 
 class Regex
   include Cinch::Plugin
+  extend Usagi::Help
 
   def initialize(*arg)
     @log = Usagi::DB[:messages]
@@ -13,7 +13,8 @@ class Regex
     super
   end
 
- match %r{^!/.*}, use_prefix: false
+  info 'regex', 'Search backlog with regexp. !/<regex>[/replacement text]'
+  match %r{^!/.*}, use_prefix: false
   def execute(m)
     r = m.message.strip.match(/!\/([^\\\/]*?)\/([^\\\/]*)\/?/)
     r ||= m.message.strip.match(/!\/(.*[^\\\/])\/?/)

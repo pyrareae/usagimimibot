@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'cinch'
-require_relative '../util'
 
 module Usagi::Calc
   def tokenize(s)

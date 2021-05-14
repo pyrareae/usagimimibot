@@ -2,7 +2,6 @@
 
 require 'cinch'
 require 'yaml'
-require_relative '../util'
 
 class Help
   include Cinch::Plugin
@@ -20,7 +19,7 @@ class Help
 
   def default_help m
     m.reply "help: usage: help [plugin]/<command> -- " +
-            "Available plugins to query: #{$help_data.keys}"
+            "Available commands to query: #{$help_data.map{|plugin, commands| "#{plugin}[#{commands.keys.sort.join(', ')}]"}.sort.join(', ')}"
   end
 
   match /help (.*?)\/(.*)/, method: :detailed_help
