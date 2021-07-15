@@ -9,7 +9,7 @@ class Divination
   info 'tarot', 'Draw tarot card'
   command /tarot/ do |m|
     card = cards.sample
-    m.reply "#{card}#{rand>0.5 ? ' [reversed]' : ''} astrology.com/tarot/card-meanings/#{card.downcase.gsub(/\d/, NUMS.map.with_index{[_2.to_s, _1]}.to_h).gsub(/\s+/, '-')}"
+    m.reply "#{card}#{rand>0.5 ? ' [reversed]' : ''} astrology.com/tarot/card-meanings/#{card.downcase.gsub(/\d+/, NUMS.map.with_index{[_2.to_s, _1]}.to_h).gsub(/\s+/, '-')}"
   end
 
   info 'yesno', 'Answer yes no question'
@@ -28,5 +28,5 @@ class Divination
     ].flatten.map{|card| card.split(" ").map{|word| ['of'].include?(word) ? word : word.capitalize}.join(" ")}
   end
 
-  NUMS = %w[ zero one two three four five six seven eight nine ten ]
+  NUMS = %w[ zero one two three four five six seven eight nine ten eleven twelve ]
 end
