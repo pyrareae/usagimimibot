@@ -12,6 +12,11 @@ class Divination
     m.reply "#{card}#{rand>0.5 ? ' [reversed]' : ''} astrology.com/tarot/card-meanings/#{card.downcase.gsub(/\d/, NUMS.map.with_index{[_2.to_s, _1]}.to_h).gsub(/\s+/, '-')}"
   end
 
+  info 'yesno', 'Answer yes no question'
+  command /yesno/ do |m|
+    m.reply rand>0.5 ? 'Yes' : 'No'
+  end
+
   def cards
     cards = ['the fool','the magician','the high priestess','the empress','the emperor','the hierophant','the lovers','the chariot','justice','the hermit','wheel of fortune','strength','the hanged man','death','temperance','the devil','the tower','the star','the moon','the sun','judgement','the world',
       ['wands','pentacles','cups','swords'].map do |suit|
