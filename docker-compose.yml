@@ -3,7 +3,7 @@ services:
   bot:
 #    user: appuser
     build: .
-    command: bash -c "bundle install && bundle exec ruby main.rb"
+    command: bash -c "bundle install && bundle exec ruby usagimimibot.rb"
     volumes:
       - .:/app
     stdin_open: true

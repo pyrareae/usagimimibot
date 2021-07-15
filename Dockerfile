@@ -1,4 +1,4 @@
-FROM ruby:2.3
+FROM ruby:2.7.3
 RUN apt-get update -qq && apt-get install -y build-essential sqlite3
 #RUN groupadd -g 999 appuser && \
 #    useradd -r -u 999 -g appuser appuser
