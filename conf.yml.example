@@ -1,9 +1,20 @@
 ---
-server:
-nick:
-admins:
-  -
-channels:
-  -
+server: irc.freenode.net
+nick: usagimimi
 api_keys:
   google:
+  openweather:
+channels:
+  -
+blacklist:
+  - Eval
+sasl:
+  username:
+  password:
+groups:
+  admin:
+    - 
+prefix: "."
+search:
+  searx_domains:
+    -
