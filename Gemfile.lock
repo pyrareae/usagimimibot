@@ -11,7 +11,7 @@ GEM
     i18n (1.0.0)
       concurrent-ruby (~> 1.0)
     mini_portile2 (2.4.0)
-    nokogiri (1.10.4)
+    nokogiri (1.10.8)
       mini_portile2 (~> 2.4.0)
     concurrent-ruby (1.1.8)
     curses (1.4.0)
